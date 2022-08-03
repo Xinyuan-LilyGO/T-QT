@@ -136,11 +136,23 @@ void go_to_sleep(void) {
   esp_sleep_enable_ext0_wakeup((gpio_num_t)PIN_BTN_R, 0);
   esp_light_sleep_start();
 }
-
+void print_chip_info(void)
+{
+    Serial.print("Chip: ");
+    Serial.println(ESP.getChipModel());
+    Serial.print("ChipRevision: ");
+    Serial.println(ESP.getChipRevision());
+    Serial.print("Psram size: ");
+    Serial.print(ESP.getPsramSize() / 1024);
+    Serial.println("KB");
+    Serial.print("Flash size: ");
+    Serial.print(ESP.getFlashChipSize() / 1024);
+    Serial.println("KB");
+}
 void setup() {
   Serial.begin(115200);
   Serial.println("Hello T-QT");
-
+  print_chip_info();
   pinMode(PIN_LCD_BL, OUTPUT);
   pinMode(PIN_BAT_VOLT, ANALOG);
   digitalWrite(PIN_LCD_BL, HIGH);

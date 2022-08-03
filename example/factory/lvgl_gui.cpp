@@ -84,8 +84,8 @@ void load_debug(lv_obj_t *src) {
   text += "flash size:\n";
   text += ESP.getFlashChipSize() / 1024 / 1024;
   text += "MB\n";
-  text += "Heap size:\n";
-  text += (ESP.getHeapSize() / 1024);
+  text += "psram size:\n";
+  text += (ESP.getPsramSize() / 1024);
   text += "kb\n";
 
   lv_label_set_text(debug_label, text.c_str());
@@ -106,7 +106,8 @@ void update_sensor(lv_timer_t *timer) {
 
   struct tm timeinfo;
   if (getLocalTime(&timeinfo)) {
-    lv_img_set_angle(hour_img, ((timeinfo.tm_hour) * 300) % 3600);
+    // The line that fixes the hour hand. by: https://github.com/Xinyuan-LilyGO/T-QT/issues/5
+    lv_img_set_angle(hour_img, ((timeinfo.tm_hour) * 300 + ((timeinfo.tm_min) * 5)) % 3600);
     lv_img_set_angle(min_img, (timeinfo.tm_min) * 60);
 
     lv_anim_t a;
