@@ -51,21 +51,21 @@ static void lcd_send_cmd(uint8_t dat) {
 
 void lcd_address_set(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
   if (horizontal == 0 || horizontal == 2) {
-    lcd_send_cmd(0x2a); //列地址设置
+    lcd_send_cmd(0x2a); // 列地址设置
     lcd_send_data16(x1 + TFT_X_OFFSET);
     lcd_send_data16(x2 + TFT_X_OFFSET);
-    lcd_send_cmd(0x2b); //行地址设置
+    lcd_send_cmd(0x2b); // 行地址设置
     lcd_send_data16(y1 + TFT_Y_OFFSET);
     lcd_send_data16(y2 + TFT_Y_OFFSET);
-    lcd_send_cmd(0x2c); //储存器写
+    lcd_send_cmd(0x2c); // 储存器写
   } else if (horizontal == 1 || horizontal == 3) {
-    lcd_send_cmd(0x2a); //列地址设置
+    lcd_send_cmd(0x2a); // 列地址设置
     lcd_send_data16(x1 + TFT_Y_OFFSET);
     lcd_send_data16(x2 + TFT_Y_OFFSET);
-    lcd_send_cmd(0x2b); //行地址设置
+    lcd_send_cmd(0x2b); // 行地址设置
     lcd_send_data16(y1 + TFT_X_OFFSET);
     lcd_send_data16(y2 + TFT_X_OFFSET);
-    lcd_send_cmd(0x2c); //储存器写
+    lcd_send_cmd(0x2c); // 储存器写
   }
 }
 
@@ -81,7 +81,22 @@ void lcd_push_colors(uint16_t x, uint16_t y, uint16_t width, uint16_t hight,
   lcd_spi->endTransaction();
   LCD_CS_Set();
 }
+void lcd_fill_color(uint16_t x, uint16_t y, uint16_t width, uint16_t hight,
+                    uint16_t color) {
+  int len = (width - x) * (hight - y);
+  lcd_address_set(x, y, x + width - 1, y + hight - 1);
+  LCD_DC_Set();
+  LCD_CS_Clr();
+  lcd_spi->beginTransaction(
+      SPISettings(_lcd_setting->frequency, SPI_MSBFIRST, TFT_SPI_MODE));
+      
+  for (uint32_t i = 0; i < (len * 2); i++) {
+    lcd_spi->write16(color);
+  }
 
+  lcd_spi->endTransaction();
+  LCD_CS_Set();
+}
 void lcd_setRotation(uint8_t r) {
   horizontal = r % 4;
   lcd_send_cmd(TFT_MADCTL);

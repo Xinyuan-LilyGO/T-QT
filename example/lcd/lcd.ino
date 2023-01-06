@@ -19,10 +19,23 @@ void setup() {
                                .frequency = 50000000};
 
   lcd_init(SPI, &lcd_config);
-  lcd_setRotation(2);
+  // lcd_setRotation(2);
   lcd_push_colors(0, 0, 128, 128, (uint16_t *)image_logo);
 
   digitalWrite(PIN_LCD_BL, LOW); // turn on backlight
+
+  delay(1000);
 }
 
-void loop() {}
+void loop() {
+  lcd_fill_color(0, 0, 128, 128, (uint16_t)0xF800);
+  delay(1000);
+  lcd_fill_color(0, 0, 128, 128, (uint16_t)0X07E0);
+  delay(1000);
+  lcd_fill_color(0, 0, 128, 128, (uint16_t)0X001F);
+  delay(1000);
+  lcd_fill_color(0, 0, 128, 128, (uint16_t)0X0000);
+  delay(1000);
+  lcd_fill_color(0, 0, 128, 128, (uint16_t)0XFFFF);
+  delay(1000);
+}

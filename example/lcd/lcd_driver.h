@@ -15,8 +15,8 @@
 #define TFT_MAD_BGR   0x08
 #define TFT_MAD_MH    0x04
 #define TFT_MAD_RGB   0x00
-//cmd
-#define TFT_SLPIN    0x10
+// cmd
+#define TFT_SLPIN     0x10
 #define TFT_INVOFF    0x20
 #define TFT_INVON     0x21
 
@@ -49,4 +49,6 @@ void lcd_init(SPIClass _spi, lcd_settings_t *config);
 void lcd_setRotation(uint8_t r);
 void lcd_push_colors(uint16_t x, uint16_t y, uint16_t width, uint16_t hight,
                      uint16_t *data);
+void lcd_fill_color(uint16_t x, uint16_t y, uint16_t width, uint16_t hight,
+                    uint16_t color);
 void lcd_sleep(void);
