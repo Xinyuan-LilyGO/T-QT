@@ -12,7 +12,7 @@ void LCD_Fill(uint16_t xsta, uint16_t ysta, uint16_t xend, uint16_t yend, uint16
     {
         for (j = xsta; j < xend; j++)
         {
-            lcd_send_data8(color);
+            lcd_send_data16(color);
         }
     }
 }

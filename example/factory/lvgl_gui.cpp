@@ -9,6 +9,9 @@ LV_IMG_DECLARE(clock_hour_img);
 LV_IMG_DECLARE(clock_min_img);
 LV_IMG_DECLARE(clock_sec_img);
 
+LV_IMG_DECLARE(LOGO128x128);
+LV_IMG_DECLARE(test_img);
+
 static lv_obj_t *dis;
 
 static lv_timer_t *timer1;
@@ -23,6 +26,8 @@ void update_sensor(lv_timer_t *timer);
 void load_duck_gif(lv_obj_t *src);
 void load_time(lv_obj_t *src);
 void load_debug(lv_obj_t *src);
+void load_logo(lv_obj_t *src);
+void load_test_img(lv_obj_t *src);
 
 void gui_init(void) {
   lv_obj_clean(lv_scr_act());
@@ -31,15 +36,32 @@ void gui_init(void) {
   lv_obj_t *tv1 = lv_tileview_add_tile(dis, 0, 0, LV_DIR_HOR);
   lv_obj_t *tv2 = lv_tileview_add_tile(dis, 0, 1, LV_DIR_HOR);
   lv_obj_t *tv3 = lv_tileview_add_tile(dis, 0, 2, LV_DIR_HOR);
-
+  lv_obj_t *tv4 = lv_tileview_add_tile(dis, 0, 3, LV_DIR_HOR);
+  lv_obj_t *tv5 = lv_tileview_add_tile(dis, 0, 4, LV_DIR_HOR);
+  lv_obj_t *tv6 = lv_tileview_add_tile(dis, 0, 5, LV_DIR_HOR);
   load_time(tv1);
   load_duck_gif(tv2);
   load_debug(tv3);
+
+  load_logo(tv4);
+  load_test_img(tv5);
+
   timer1 = lv_timer_create(update_sensor, 1000, NULL);
 }
 
 void gui_switch_page(uint8_t num) {
   lv_obj_set_tile_id(dis, 0, num, LV_ANIM_ON);
+}
+
+void load_logo(lv_obj_t *src) {
+  lv_obj_t *img = lv_img_create(src);
+  lv_obj_center(img);
+  lv_img_set_src(img, &LOGO128x128);
+}
+void load_test_img(lv_obj_t *src) {
+  lv_obj_t *img = lv_img_create(src);
+  lv_obj_center(img);
+  lv_img_set_src(img, &test_img);
 }
 
 void load_duck_gif(lv_obj_t *src) {
@@ -106,8 +128,10 @@ void update_sensor(lv_timer_t *timer) {
 
   struct tm timeinfo;
   if (getLocalTime(&timeinfo)) {
-    // The line that fixes the hour hand. by: https://github.com/Xinyuan-LilyGO/T-QT/issues/5
-    lv_img_set_angle(hour_img, ((timeinfo.tm_hour) * 300 + ((timeinfo.tm_min) * 5)) % 3600);
+    // The line that fixes the hour hand. by:
+    // https://github.com/Xinyuan-LilyGO/T-QT/issues/5
+    lv_img_set_angle(
+        hour_img, ((timeinfo.tm_hour) * 300 + ((timeinfo.tm_min) * 5)) % 3600);
     lv_img_set_angle(min_img, (timeinfo.tm_min) * 60);
 
     lv_anim_t a;

@@ -2,6 +2,7 @@
 #include "OneButton.h"
 #include "WiFi.h"
 #include "image_logo.h"
+#include "img_t_qt_cert.h"
 #include "lvgl.h"
 #include "lvgl_gui.h"
 #include "pin_config.h"
@@ -50,11 +51,12 @@ void timeavailable(struct timeval *t) {
 void switch_gui(void) {
   static uint32_t n;
   n++;
-  gui_switch_page(n % 3);
+  gui_switch_page(n % 6);
 }
 
 void wifi_test(void) {
   String text;
+
   lv_obj_t *label = lv_label_create(lv_scr_act());
   lv_obj_align(label, LV_ALIGN_TOP_LEFT, 0, 0);
   lv_obj_set_width(label, LV_PCT(100));
@@ -136,18 +138,17 @@ void go_to_sleep(void) {
   esp_sleep_enable_ext0_wakeup((gpio_num_t)PIN_BTN_R, 0);
   esp_light_sleep_start();
 }
-void print_chip_info(void)
-{
-    Serial.print("Chip: ");
-    Serial.println(ESP.getChipModel());
-    Serial.print("ChipRevision: ");
-    Serial.println(ESP.getChipRevision());
-    Serial.print("Psram size: ");
-    Serial.print(ESP.getPsramSize() / 1024);
-    Serial.println("KB");
-    Serial.print("Flash size: ");
-    Serial.print(ESP.getFlashChipSize() / 1024);
-    Serial.println("KB");
+void print_chip_info(void) {
+  Serial.print("Chip: ");
+  Serial.println(ESP.getChipModel());
+  Serial.print("ChipRevision: ");
+  Serial.println(ESP.getChipRevision());
+  Serial.print("Psram size: ");
+  Serial.print(ESP.getPsramSize() / 1024);
+  Serial.println("KB");
+  Serial.print("Flash size: ");
+  Serial.print(ESP.getFlashChipSize() / 1024);
+  Serial.println("KB");
 }
 void setup() {
   Serial.begin(115200);
@@ -160,11 +161,25 @@ void setup() {
   analogReadResolution(12);
   lcd_init();
   lcd_setRotation(2);
-  lcd_PushColors(0, 0, 128, 128, (uint16_t *)gImage_image_logo, 128 * 128);
   digitalWrite(PIN_LCD_BL, LOW);
+  
+  lcd_PushColors(0, 0, 128, 128, (uint16_t *)gImage_img_t_qt_cert, 128 * 128);
+  delay(2000);
+  lcd_PushColors(0, 0, 128, 128, (uint16_t *)gImage_image_logo, 128 * 128);
   delay(2000);
   btn_left.attachClick(switch_gui);
   btn_right.attachClick(go_to_sleep);
+
+  LCD_Fill(0, 0, 128, 128, (uint16_t)0xF800);
+  delay(1000);
+  LCD_Fill(0, 0, 128, 128, (uint16_t)0X07E0);
+  delay(1000);
+  LCD_Fill(0, 0, 128, 128, (uint16_t)0X001F);
+  delay(1000);
+  LCD_Fill(0, 0, 128, 128, (uint16_t)0X0000);
+  delay(1000);
+  LCD_Fill(0, 0, 128, 128, (uint16_t)0XFFFF);
+  delay(1000);
 
   lv_init();
   lv_disp_draw_buf_init(&draw_buf, buf, NULL, SCREEN_WIDTH * SCREEN_WIDTH);
@@ -183,6 +198,7 @@ void setup() {
   sntp_servermode_dhcp(1); // (optional)
   configTime(GMT_OFFSET_SEC, DAY_LIGHT_OFFSET_SEC, NTP_SERVER1, NTP_SERVER2);
   wifi_test();
+  // gui_init();
 }
 
 void loop() {
