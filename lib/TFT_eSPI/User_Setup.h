@@ -42,7 +42,7 @@
 //#define RPI_DISPLAY_TYPE // 20MHz maximum SPI
 
 // Only define one driver, the other ones must be commented out
-// #define ILI9341_DRIVER       // Generic driver for common displays
+#define ILI9341_DRIVER       // Generic driver for common displays
 //#define ILI9341_2_DRIVER     // Alternative ILI9341 driver, see https://github.com/Bodmer/TFT_eSPI/issues/1172
 //#define ST7735_DRIVER      // Define additional parameters below for this display
 //#define ILI9163_DRIVER     // Define additional parameters below for this display
@@ -62,7 +62,7 @@
 //#define SSD1963_800_DRIVER
 //#define SSD1963_800ALT_DRIVER
 //#define ILI9225_DRIVER
-#define GC9A01_DRIVER
+//#define GC9A01_DRIVER
 
 // Some displays support SPI reads via the MISO pin, other displays have a single
 // bi-directional SDA pin and the library will try to read this via the MOSI line.
@@ -73,7 +73,7 @@
 // For ST7735, ST7789 and ILI9341 ONLY, define the colour order IF the blue and red are swapped on your display
 // Try ONE option at a time to find the correct colour order for your display
 
- #define TFT_RGB_ORDER TFT_RGB  // Colour order Red-Green-Blue
+//  #define TFT_RGB_ORDER TFT_RGB  // Colour order Red-Green-Blue
 //  #define TFT_RGB_ORDER TFT_BGR  // Colour order Blue-Green-Red
 
 // For M5Stack ESP32 module with integrated ILI9341 display ONLY, remove // in line below
@@ -82,11 +82,11 @@
 
 // For ST7789, ST7735, ILI9163 and GC9A01 ONLY, define the pixel width and height in portrait orientation
 // #define TFT_WIDTH  80
-#define TFT_WIDTH  128
+// #define TFT_WIDTH  128
 // #define TFT_WIDTH  172 // ST7789 172 x 320
 // #define TFT_WIDTH  240 // ST7789 240 x 240 and 240 x 320
 // #define TFT_HEIGHT 160
-#define TFT_HEIGHT 128
+// #define TFT_HEIGHT 128
 // #define TFT_HEIGHT 240 // ST7789 240 x 240
 // #define TFT_HEIGHT 320 // ST7789 240 x 320
 // #define TFT_HEIGHT 240 // GC9A01 240 x 240
@@ -104,6 +104,7 @@
 // #define ST7735_GREENTAB3
 // #define ST7735_GREENTAB128    // For 128 x 128 display
 // #define ST7735_GREENTAB160x80 // For 160 x 80 display (BGR, inverted, 26 offset)
+// #define ST7735_ROBOTLCD       // For some RobotLCD arduino shields (128x160, BGR, https://docs.arduino.cc/retired/getting-started-guides/TFT)
 // #define ST7735_REDTAB
 // #define ST7735_BLACKTAB
 // #define ST7735_REDTAB160x80   // For 160 x 80 display with 24 pixel offset
@@ -165,9 +166,9 @@
 // ###### EDIT THE PIN NUMBERS IN THE LINES FOLLOWING TO SUIT YOUR ESP8266 SETUP ######
 
 // For NodeMCU - use pin numbers in the form PIN_Dx where Dx is the NodeMCU pin designation
-// #define TFT_CS   PIN_D8  // Chip select control pin D8
-// #define TFT_DC   PIN_D3  // Data Command control pin
-// #define TFT_RST  PIN_D4  // Reset pin (could connect to NodeMCU RST, see next line)
+#define TFT_CS   PIN_D8  // Chip select control pin D8
+#define TFT_DC   PIN_D3  // Data Command control pin
+#define TFT_RST  PIN_D4  // Reset pin (could connect to NodeMCU RST, see next line)
 //#define TFT_RST  -1    // Set TFT_RST to -1 if the display RESET is connected to NodeMCU RST or 3.3V
 
 //#define TFT_BL PIN_D1  // LED back-light (only for ST7789 with backlight control pin)
@@ -212,13 +213,6 @@
 
 // For ESP32 Dev board (only tested with GC9A01 display)
 // The hardware SPI can be mapped to any pins
-
-#define TFT_MISO -1
-#define TFT_MOSI 2
-#define TFT_SCLK 3
-#define TFT_CS 5 // Not connected
-#define TFT_DC 6
-#define TFT_RST 1 // Connect reset to ensure display initialises
 
 //#define TFT_MOSI 15 // In some display driver board, it might be written as "SDA" and so on.
 //#define TFT_SCLK 14
@@ -330,6 +324,20 @@
 // For RP2040 processor and SPI displays, uncomment the following line to use the PIO interface.
 //#define RP2040_PIO_SPI // Leave commented out to use standard RP2040 SPI port interface
 
+// For RP2040 processor and 8 or 16 bit parallel displays:
+// The parallel interface write cycle period is derived from a division of the CPU clock
+// speed so scales with the processor clock. This means that the divider ratio may need
+// to be increased when overclocking. I may also need to be adjusted dependant on the
+// display controller type (ILI94341, HX8357C etc). If RP2040_PIO_CLK_DIV is not defined
+// the library will set default values which may not suit your display.
+// The display controller data sheet will specify the minimum write cycle period. The
+// controllers often work reliably for shorter periods, however if the period is too short
+// the display may not initialise or graphics will become corrupted.
+// PIO write cycle frequency = (CPU clock/(4 * RP2040_PIO_CLK_DIV))
+//#define RP2040_PIO_CLK_DIV 1 // 32ns write cycle at 125MHz CPU clock
+//#define RP2040_PIO_CLK_DIV 2 // 64ns write cycle at 125MHz CPU clock
+//#define RP2040_PIO_CLK_DIV 3 // 96ns write cycle at 125MHz CPU clock
+
 // For the RP2040 processor define the SPI port channel used (default 0 if undefined)
 //#define TFT_SPI_PORT 1 // Set to 0 if SPI0 pins are used, or 1 if spi1 pins used
 
@@ -373,5 +381,3 @@
 // so changing it here has no effect
 
 // #define SUPPORT_TRANSACTIONS
-
-#define CGRAM_OFFSET

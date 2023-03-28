@@ -1,25 +1,33 @@
 // This header file contains a list of user setup files and defines which one the
 // compiler uses when the IDE performs a Verify/Compile or Upload.
 //
-// Users can create configurations for different Espressif boards and TFT displays.
+// Users can create configurations for different boards and TFT displays.
 // This makes selecting between hardware setups easy by "uncommenting" one line.
 
 // The advantage of this hardware configuration method is that the examples provided
-// with the library should work with different setups immediately without any other
-// changes being needed. It also improves the portability of users sketches to other
-// hardware configurations and compatible libraries.
+// with the library should work with immediately without any other changes being
+// needed. It also improves the portability of users sketches to other hardware
+// configurations and compatible libraries.
 //
 // Create a shortcut to this file on your desktop to permit quick access for editing.
 // Re-compile and upload after making and saving any changes to this file.
 
 // Customised User_Setup files are stored in the "User_Setups" folder.
 
+// It is also possible for the user tft settings to be included with the sketch, see
+// the "Sketch_with_tft_setup" generic example. This may be more convenient for
+// multiple projects.
+
 #ifndef USER_SETUP_LOADED //  Lets PlatformIO users define settings in
                           //  platformio.ini, see notes in "Tools" folder.
 
-// Only ONE line below should be uncommented.  Add extra lines and files as needed.
+///////////////////////////////////////////////////////
+//   User configuration selection lines are below    //
+///////////////////////////////////////////////////////
 
-#include <User_Setup.h>           // Default setup is root library folder
+// Only ONE line below should be uncommented to define your setup.  Add extra lines and files as needed.
+
+// #include <User_Setup.h>           // Default setup is root library folder
 
 //#include <User_Setups/Setup1_ILI9341.h>  // Setup file for ESP8266 configured for my ILI9341
 //#include <User_Setups/Setup2_ST7735.h>   // Setup file for ESP8266 configured for my ST7735
@@ -68,6 +76,7 @@
 
 //#include <User_Setups/Setup36_RPi_touch_ST7796.h>      // Setup file configured for ESP32 and RPi ST7796 TFT with touch
 
+//#include <User_Setups/Setup42_ILI9341_ESP32.h>           // Setup file for ESP32 and SPI ILI9341 240x320
 //#include <User_Setups/Setup43_ST7735.h>            // Setup file for ESP8266 & ESP32 configured for my ST7735S 80x160
 //#include <User_Setups/Setup44_TTGO_CameraPlus.h>   // Setup file for ESP32 and TTGO T-CameraPlus ST7789 SPI bus TFT    240x240
 //#include <User_Setups/Setup45_TTGO_T_Watch.h>      // Setup file for ESP32 and TTGO T-Watch ST7789 SPI bus TFT  240x240
@@ -107,17 +116,30 @@
 //#include <User_Setups/Setup136_LilyGo_TTV.h>       // Setup file for ESP32 and Lilygo TTV ST7789 SPI bus TFT  135x240
 //#include <User_Setups/Setup137_LilyGo_TDisplay_RP2040.h>  // Setup file for Lilygo T-Display RP2040 (ST7789 on SPI bus with 135x240 TFT)
 
+//#include <User_Setups/Setup138_Pico_Explorer_Base_RP2040_ST7789.h> // Setup file for Pico Explorer Base by Pimoroni for RP2040 (ST7789 on SPI bus with 240x240 TFT)
+
 //#include <User_Setups/Setup200_GC9A01.h>           // Setup file for ESP32 and GC9A01 240 x 240 TFT
 
 //#include <User_Setups/Setup201_WT32_SC01.h>        // Setup file for ESP32 based WT32_SC01 from Seeed
 
 //#include <User_Setups/Setup202_SSD1351_128.h>      // Setup file for ESP32/ESP8266 based SSD1351 128x128 1.5inch OLED display
 
-// #include <User_Setups/Setup203_ST7789.h>     // Setup file for ESP32/ESP8266 based ST7789 240X280 1.69inch TFT 
+//#include <User_Setups/Setup203_ST7789.h>     // Setup file for ESP32/ESP8266 based ST7789 240X280 1.69inch TFT 
 
 //#include <User_Setups/Setup204_ESP32_TouchDown.h>     // Setup file for the ESP32 TouchDown based on ILI9488 480 x 320 TFT 
 
 //#include <User_Setups/Setup205_ESP32_TouchDown_S3.h>     // Setup file for the ESP32 TouchDown S3 based on ILI9488 480 x 320 TFT 
+
+//#include <User_Setups/Setup206_LilyGo_T_Display_S3.h>     // For the LilyGo T-Display S3 based ESP32S3 with ST7789 170 x 320 TFT
+//#include <User_Setups/Setup207_LilyGo_T_HMI.h>            // For the LilyGo T-HMI S3 based ESP32S3 with ST7789 240 x 320 TFT
+
+//#include <User_Setups/Setup208_ESP32_S3_Box_Lite.h>      // For the ESP32 S3 Box Lite (may also work with ESP32 S3 Box)
+
+//#include <User_Setups/Setup209_LilyGo_T_Dongle_S3.h>      // For the LilyGo T-Dongle S3 based ESP32 with ST7735 80 x 160 TFT
+// #include <User_Setups/Setup210_LilyGo_T_Embed_S3.h>         // For the LilyGo T-Embed S3 based ESP32S3 with ST7789 170 x 320 TFT
+#include <User_Setups/Setup211_LilyGo_T_QT_Pro_S3.h>         // For the LilyGo T-QT Pro S3 based ESP32S3 with GC9A01 128 x 128 TFT
+
+//#include <User_Setups/Setup301_BW16_ST7735.h>            // Setup file for Bw16-based boards with ST7735 160 x 80 TFT
 
 //#include <User_Setups/SetupX_Template.h>     // Template file for a setup
 
