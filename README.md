@@ -43,3 +43,5 @@ T-QT is a development board whose main control chip is ESP32-S3. It is equipped 
 > T-QT does not have the function of charging lithium batteries, but it can support the access of lithium batteries at that time. The battery voltage status can be detected using IO4. 
 2. Is it normal for the chip to continue to heat up during use?
 > The ESP32S3 will continue to heat up during use. Due to the small size of the baseboard, the heat of the ESP32S3 cannot be dissipated in time, so the overall temperature is stable at about 50-60 degrees Celsius. This temperature does not affect the normal use of the chip.
+3. Unable to write?
+> Press and hold the BOOT button on the board (located on the left side of the front of the screen), keep it tight, then plug in the USB and click to upload the sketch
