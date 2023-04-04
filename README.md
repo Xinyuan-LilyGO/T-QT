@@ -15,9 +15,9 @@ T-QT is a development board whose main control chip is ESP32-S3. It is equipped 
 ***
 <h3 align = "left">Product 📷:</h3>
 
-|  Product |  Product Link |
-| :--------: | :---------: |
-| T-QT |  [AliExpress](https://www.aliexpress.com/item/1005004405292321.html)   |
+| Product |                            Product Link                             |
+| :-----: | :-----------------------------------------------------------------: |
+|  T-QT   | [AliExpress](https://www.aliexpress.com/item/1005004405292321.html) |
 
 
 ***
@@ -45,3 +45,10 @@ T-QT is a development board whose main control chip is ESP32-S3. It is equipped 
 > The ESP32S3 will continue to heat up during use. Due to the small size of the baseboard, the heat of the ESP32S3 cannot be dissipated in time, so the overall temperature is stable at about 50-60 degrees Celsius. This temperature does not affect the normal use of the chip.
 3. Unable to write?
 > Press and hold the BOOT button on the board (located on the left side of the front of the screen), keep it tight, then plug in the USB and click to upload the sketch
+
+## Tips
+
+- The program can be written normally, but there is still no display after writing
+    1. There are factory test files in the firmware folder, which can be flashed into the board to check whether the board is normal. If there is still no display, then it can be judged that there is a problem with the board or the screen
+    2. Delete the <TFT_eSPI> in the libraries, and replace the <TFT_eSPI> in the <lib> folder of the main page to the libraries directory
+    3. When opening the Arduino IDE, it prompts whether to upgrade the library, please choose not to upgrade, otherwise it will overwrite the configuration of the <TFT_eSPI> display
