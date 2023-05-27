@@ -10,7 +10,6 @@ T-QT is a development board whose main control chip is ESP32-S3. It is equipped 
 ## Pinmap
 
 <img  width="480" src=image/pinmap_en.jpg>
-<img  width="480" src=image/specifications_en.jpg>
 
 ***
 <h3 align = "left">Product 📷:</h3>
@@ -24,10 +23,21 @@ T-QT is a development board whose main control chip is ESP32-S3. It is equipped 
 ## Quick Start
 
 > Arduino:
->- Click "File" in the upper left corner -> Preferences -> Additional Development >Board Manager URL -> Enter the URL in the input box.
-(ESP32S3 is a new chip, and the SDK version needs to be version 2.0.3 or above)
-> `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`
->-  Click OK and the software will be installed by itself. After installation, restart the Arduino IDE software.
+1. In Arduino Preferences, on the Settings tab, enter the `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json` URL in the `Additional boards manager URLs` input box. 
+2. Click OK and the software will install. 
+3. Search for ESP32 in Tools → Board Manager and install ESP32-Arduino SDK (version 2.0.3 or above)
+4. Copy everything from this repository lib folder to [Arduino library folder](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries#manual-installation) (e.g. `C:\Users\YourName\Documents\Arduino\libraries`)
+5. Select the correct settings in the Tools menu as shown below.
+
+    ### K192 , 4M Flash , 2M PSRAM
+
+    <img  width="480" src=image/N4R2.jpg>
+
+    ### K191 , 8M Flash ,No PSRAM
+
+    <img  width="480" src=image/N8.jpg>
+
+
 
 > PlatfromIO:
 > - PlatformIO plug-in installation: Click on the extension on the left column -> search platformIO -> install the first plug-in
