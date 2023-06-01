@@ -1,7 +1,5 @@
 <h1 align = "center"> 🌟T-QT🌟</h1>
 
-<img  width="480" src=image/logo.png>
-
 ## Description
 
 T-QT is a development board whose main control chip is ESP32-S3. It is equipped with a 0.85-inch LCD color screen and two programmable buttons. Retains the same layout design as T-Display. You can directly use ESP32S3 for USB communication or programming.
@@ -9,15 +7,18 @@ T-QT is a development board whose main control chip is ESP32-S3. It is equipped 
 ***
 ## Pinmap
 
+!!! There are currently two chip versions, using ESP32S3-FN4R2 (4MB Flash, 2MB PSRAM) and ESP32S3-N8 (8MB Flash, No PSRAM), the following only shows the pin diagram of N4R2, and the pin diagram of N8 is the same.
+
 <img  width="480" src=image/pinmap_en.jpg>
+<img  width="480" src=image/specifications_en.jpg>
 
 ***
 <h3 align = "left">Product 📷:</h3>
 
-| Product |                            Product Link                             |
-| :-----: | :-----------------------------------------------------------------: |
-|  T-QT   | [AliExpress](https://www.aliexpress.com/item/1005004405292321.html) |
-
+| Product  |                            Product Link                             |
+| :------: | :-----------------------------------------------------------------: |
+| T-QT Pro | [AliExpress](https://www.aliexpress.com/item/1005004405292321.html) |
+| T-QT Pro |          [LilyGo](https://www.lilygo.cc/products/t-qt-pro)          |
 
 ***
 ## Quick Start
@@ -49,12 +50,17 @@ T-QT is a development board whose main control chip is ESP32-S3. It is equipped 
 
 ***
 ## Quick question and answer
+
 1. Does the onboard lithium battery charge function?
-> T-QT does not have the function of charging lithium batteries, but it can support the access of lithium batteries at that time. The battery voltage status can be detected using IO4. 
+   - The old version T-QT does not support charging
+   - The version on sale T-QT Pro supports charging function
+
 2. Is it normal for the chip to continue to heat up during use?
-> The ESP32S3 will continue to heat up during use. Due to the small size of the baseboard, the heat of the ESP32S3 cannot be dissipated in time, so the overall temperature is stable at about 50-60 degrees Celsius. This temperature does not affect the normal use of the chip.
+   - The ESP32S3 will continue to heat up during use. Due to the small size of the baseboard, the heat of the ESP32S3 cannot be dissipated in time, so the overall temperature is stable at about 50-60 degrees Celsius. This temperature does not affect the normal use of the chip.
+
+
 3. Unable to write?
-> Press and hold the BOOT button on the board (located on the left side of the front of the screen), keep it tight, then plug in the USB and click to upload the sketch
+   -  Press and hold the BOOT button on the board (located on the left side of the front of the screen), keep it tight, then plug in the USB and click to upload the sketch
 
 ## Tips
 
