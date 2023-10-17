@@ -1,42 +1,32 @@
-// This setup is for the RP2040 processor only when used with 8 bit parallel displays
+// This setup is for the Waveshare RP2040-LCD-0.96 board
 // See SetupX_Template.h for all options available
-#define USER_SETUP_ID 100
-
-////////////////////////////////////////////////////////////////////////////////////////////
-// Interface
-////////////////////////////////////////////////////////////////////////////////////////////
-#define TFT_PARALLEL_8_BIT
+#define USER_SETUP_ID 108
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Display driver type
 ////////////////////////////////////////////////////////////////////////////////////////////
-#define ILI9488_DRIVER
+#define ST7735_DRIVER
+#define ST7735_GREENTAB160x80
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// RP2040 pins used
+// Display params
 ////////////////////////////////////////////////////////////////////////////////////////////
+#define TFT_WIDTH  80
+#define TFT_HEIGHT 160
+#define TFT_INVERSION_ON
 
-//#define TFT_CS   -1  // Do not define, chip select control pin permanently connected to 0V
+////////////////////////////////////////////////////////////////////////////////////////////
+// RP2040 config and pins
+////////////////////////////////////////////////////////////////////////////////////////////
+#define SPI_FREQUENCY  27000000
+#define RP2040_PIO_CLK_DIV 1
+#define TFT_SPI_PORT 1
 
-// These pins can be moved and are controlled directly by the library software
-#define TFT_DC   28    // Data Command control pin
-#define TFT_RST   2    // Reset pin
-
-//#define TFT_RD   -1  // Do not define, read pin permanently connected to 3V3
-
-// Note: All the following pins are PIO hardware configured and driven
-  #define TFT_WR   22
-
-  // PIO requires these to be sequentially increasing - do not change
-  #define TFT_D0    6
-  #define TFT_D1    7
-  #define TFT_D2    8
-  #define TFT_D3    9
-  #define TFT_D4   10
-  #define TFT_D5   11
-  #define TFT_D6   12
-  #define TFT_D7   13
-//*/
+#define TFT_MOSI 11
+#define TFT_SCLK 10
+#define TFT_CS   9
+#define TFT_DC   8
+#define TFT_RST  12
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Fonts to be available
