@@ -40,11 +40,10 @@ void gui_init(void)
     lv_obj_t *tv3 = lv_tileview_add_tile(dis, 0, 2, LV_DIR_HOR);
     lv_obj_t *tv4 = lv_tileview_add_tile(dis, 0, 3, LV_DIR_HOR);
     lv_obj_t *tv5 = lv_tileview_add_tile(dis, 0, 4, LV_DIR_HOR);
-    lv_obj_t *tv6 = lv_tileview_add_tile(dis, 0, 5, LV_DIR_HOR);
+
     load_time(tv1);
     load_duck_gif(tv2);
     load_debug(tv3);
-
     load_logo(tv4);
     load_test_img(tv5);
 
@@ -129,6 +128,11 @@ void sec_poin_anim_cb(void *img, int32_t v)
     lv_img_set_angle((lv_obj_t *)img, v);
 }
 
+void sec_img_cb(void *img, int32_t v)
+{
+    lv_img_set_angle((lv_obj_t *)img, v);
+}
+
 void update_sensor(lv_timer_t *timer)
 {
     float volt = (analogRead(PIN_BAT_VOLT) * 2 * 3.3) / 4096;
@@ -141,14 +145,13 @@ void update_sensor(lv_timer_t *timer)
     if (getLocalTime(&timeinfo, 200)) {
         // The line that fixes the hour hand. by:
         // https://github.com/Xinyuan-LilyGO/T-QT/issues/5
-        lv_img_set_angle(
-            hour_img, ((timeinfo.tm_hour) * 300 + ((timeinfo.tm_min) * 5)) % 3600);
+        lv_img_set_angle(hour_img, ((timeinfo.tm_hour) * 300 + ((timeinfo.tm_min) * 5)) % 3600);
         lv_img_set_angle(min_img, (timeinfo.tm_min) * 60);
 
         lv_anim_t a;
         lv_anim_init(&a);
         lv_anim_set_var(&a, sec_img);
-        lv_anim_set_exec_cb(&a, (lv_anim_exec_xcb_t)lv_img_set_angle);
+        lv_anim_set_exec_cb(&a, sec_img_cb);
         lv_anim_set_values(&a, (timeinfo.tm_sec * 60) % 3600,
                            (timeinfo.tm_sec + 1) * 60);
         lv_anim_set_time(&a, 1000);

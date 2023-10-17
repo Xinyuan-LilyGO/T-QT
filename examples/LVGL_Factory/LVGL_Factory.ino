@@ -5,7 +5,7 @@
 #include "img_t_qt_cert.h"
 #include "lvgl.h"
 #include "lvgl_gui.h"
-#include "sntp.h"
+#include "esp_sntp.h"
 #include "time.h"
 #include <TFT_eSPI.h>
 
@@ -123,7 +123,7 @@ void wifi_test(void)
     Serial.print(WIFI_SSID);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORLD);
     uint32_t last_tick = millis();
-    uint32_t i, j = 0;
+    uint32_t i = 0, j = 0;
     while (WiFi.status() != WL_CONNECTED) {
         if (i++ > 40) {
             text += "\n";
@@ -169,7 +169,11 @@ void go_to_sleep(void)
 
     //IO47 cannot be set to the source of the awakening,
     //and can only be set to GPIO0 as the keys to wake the source
+#if ESP_IDF_VERSION >=  ESP_IDF_VERSION_VAL(4,4,6)
+    esp_sleep_enable_ext1_wakeup(GPIO_SEL_0, ESP_EXT1_WAKEUP_ANY_LOW);
+#else
     esp_sleep_enable_ext1_wakeup(GPIO_SEL_0, ESP_EXT1_WAKEUP_ALL_LOW);
+#endif
 
     esp_deep_sleep_start();
 }
