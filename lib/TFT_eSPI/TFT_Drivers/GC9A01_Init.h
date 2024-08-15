@@ -2,6 +2,112 @@
 // This is the command sequence that initialises the GC9A01 driver
 
 {
+  writecommand(0xFE);			
+	writecommand(0xEF);
+
+	writecommand(0xB0);		
+	writedata(0xC0); 
+
+	writecommand(0xB1);
+	writedata(0x80);
+
+	writecommand(0xB2);		
+	writedata(0x27); 
+
+	writecommand(0xB3);			
+	writedata(0x13);
+
+	writecommand(0xB6);		
+	writedata(0x19); 
+
+	writecommand(0xB7);		
+	writedata(0x05);  
+
+	writecommand(0xAC);
+	writedata(0xC8);
+
+	writecommand(0xAB);
+	writedata(0x0f);
+
+	writecommand(0x3A);		
+	writedata(0x05);
+
+	writecommand(0xB4);	
+	writedata(0x04);
+
+	writecommand(0xA8);
+	writedata(0x08);
+
+	writecommand(0xB8);
+	writedata(0x08);
+
+	writecommand(0xEA);
+	writedata(0x02);
+
+	writecommand(0xE8);	
+	writedata(0x2A); 
+
+	writecommand(0xE9);	
+	writedata(0x47); 
+
+	writecommand(0xE7);
+	writedata(0x5F);
+
+	writecommand(0xC6);   
+	writedata(0x21); 
+
+	writecommand(0xC7);   
+	writedata(0x15);
+
+	writecommand(0xF0);	
+	writedata(0x1D);
+	writedata(0x38);
+	writedata(0x09);
+	writedata(0x4D);
+	writedata(0x92);
+	writedata(0x2F);
+	writedata(0x35);
+	writedata(0x52);
+	writedata(0x1E);
+	writedata(0x0C);
+	writedata(0x04);
+	writedata(0x12);
+	writedata(0x14);
+	writedata(0x1F);
+
+	writecommand(0xF1);
+	writedata(0x16);
+	writedata(0x40);
+	writedata(0x1C);
+	writedata(0x54);
+	writedata(0xA9);
+	writedata(0x2D);
+	writedata(0x2E);
+	writedata(0x56);
+	writedata(0x10);
+	writedata(0x0D);
+	writedata(0x0C);
+	writedata(0x1A);
+	writedata(0x14);
+	writedata(0x1E);
+
+	writecommand(0xF4);
+	writedata(0x00);
+	writedata(0x00);
+	writedata(0xFF);
+
+	writecommand(0xBA);
+	writedata(0xFF);
+	writedata(0xFF);
+
+  writecommand(0x20);
+
+	writecommand(0x11);
+	delay(120);
+	writecommand(0x29);
+
+
+  #if 0
   writecommand(0xEF);
   writecommand(0xEB);
   writedata(0x14);
@@ -229,4 +335,5 @@
   delay(120);
   writecommand(0x29);
   delay(20);
+  #endif
 }

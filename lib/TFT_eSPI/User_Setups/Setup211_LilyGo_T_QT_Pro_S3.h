@@ -12,7 +12,7 @@
 // #define TFT_INVERSION_ON
 //#define TFT_INVERSION_OFF
 #define TFT_BACKLIGHT_ON 0
-#define CGRAM_OFFSET
+// #define CGRAM_OFFSET
 
 
 #define TFT_BL     10   // LED back-light
