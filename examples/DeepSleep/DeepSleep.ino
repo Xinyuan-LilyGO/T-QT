@@ -14,7 +14,7 @@ void setup()
 {
 
     tft.begin();
-    tft.setRotation(2);
+    tft.setRotation(0);
     tft.pushImage(0, 0, 128, 128, (uint16_t *)image_logo);
 
     //Disable backlight hold on

@@ -22,7 +22,7 @@ unsigned long targetTime = 0;
 
 void setup(void) {
   tft.init();
-  tft.setRotation(2);
+  tft.setRotation(0);
   tft.fillScreen(TFT_BLACK);
   targetTime = millis() + 1000;
 }

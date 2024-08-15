@@ -211,7 +211,8 @@ void setup()
     analogReadResolution(12);
 
     tft.begin();
-    tft.setRotation(2);
+    tft.setRotation(0);
+
 
     tft.pushImage(0, 0, 128, 128, (uint16_t *)gImage_img_t_qt_cert);
     delay(2000);
