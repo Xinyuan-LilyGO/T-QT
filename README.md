@@ -30,11 +30,11 @@ T-QT is a development board whose main control chip is ESP32-S3. It is equipped 
 4. Copy everything from this repository lib folder to [Arduino library folder](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries#manual-installation) (e.g. `C:\Users\YourName\Documents\Arduino\libraries`)
 5. Select the correct settings in the Tools menu as shown below.
 
-    ### K192 , 4M Flash , 2M PSRAM
+    ### K192,H579,H590 , 4M Flash , 2M PSRAM
 
     <img  width="480" src=image/N4R2.jpg>
 
-    ### K191 , 8M Flash ,No PSRAM
+    ### K191,H628,H588 , 8M Flash ,No PSRAM
 
     <img  width="480" src=image/N8.jpg>
 
@@ -68,3 +68,5 @@ T-QT is a development board whose main control chip is ESP32-S3. It is equipped 
     1. There are factory test files in the firmware folder, which can be flashed into the board to check whether the board is normal. If there is still no display, then it can be judged that there is a problem with the board or the screen
     2. Delete the <TFT_eSPI> in the libraries, and replace the <TFT_eSPI> in the <lib> folder of the main page to the libraries directory
     3. When opening the Arduino IDE, it prompts whether to upgrade the library, please choose not to upgrade, otherwise it will overwrite the configuration of the <TFT_eSPI> display
+
+- Please note that the current use is a copy of TFT_eSPI, the screen initialization parameters have been modified, if you use the initialization parameters of the main line branch, the screen will not be clear
