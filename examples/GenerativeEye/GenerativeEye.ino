@@ -1,8 +1,8 @@
 /*
  * Generative Eye - Interactive Art for T-QT
  *
- * A living eye that watches, blinks, and glitches.
- * Press LEFT for "DIGITAL", RIGHT for "HUMANITY"
+ * Abstract organic iris with radial fibers and pulsing pupil
+ * Inspired by macro iris photography / sea anemone aesthetics
  *
  * Hardware: LilyGo T-QT Pro (ESP32-S3, GC9A01 128x128)
  */
@@ -13,7 +13,7 @@
 
 // Display
 TFT_eSPI tft = TFT_eSPI();
-TFT_eSprite eyeSprite = TFT_eSprite(&tft);
+TFT_eSprite spr = TFT_eSprite(&tft);
 
 // Screen dimensions
 #define SCREEN_W 128
@@ -29,46 +29,48 @@ TFT_eSprite eyeSprite = TFT_eSprite(&tft);
 OneButton btnLeft(PIN_BTN_L, true, true);
 OneButton btnRight(PIN_BTN_R, true, true);
 
-// Colors - Grayscale palette for the eye
-#define COL_BLACK      0x0000
-#define COL_WHITE      0xFFFF
-#define COL_DARK_GRAY  0x2104
-#define COL_MID_GRAY   0x4208
-#define COL_LIGHT_GRAY 0x8410
-#define COL_SKIN       0xD69A  // Slightly warm gray for skin
-#define COL_IRIS_DARK  0x2945  // Dark blue-gray
-#define COL_IRIS_MID   0x4A69  // Medium blue-gray
-#define COL_IRIS_LIGHT 0x6B4D  // Light blue-gray
+// Colors
+#define COL_BLACK       0x0000
+#define COL_WHITE       0xFFFF
+#define COL_CYAN_DARK   0x3B6C  // Dark cyan for fiber base
+#define COL_CYAN_MID    0x5D12  // Medium cyan
+#define COL_CYAN_LIGHT  0x7F18  // Light cyan/pale blue
+#define COL_CYAN_PALE   0xAFBF  // Very pale cyan (almost white)
+#define COL_ORANGE      0xFB80  // Orange for dots
+#define COL_ORANGE_DARK 0xC240  // Darker orange ring
+#define COL_RED_DARK    0x9000  // Dark red inner ring
 
-// Eye parameters
-float eyeX = 0;           // Current eye position (-1 to 1)
-float eyeY = 0;
-float targetX = 0;        // Target position
-float targetY = 0;
-float eyeSpeed = 0.08;    // Movement smoothing
+// Fiber parameters
+#define NUM_RINGS 12           // Number of concentric rings of fibers
+#define BASE_FIBERS 16         // Fibers in innermost ring
+#define MAX_FIBERS 400         // Maximum total fibers
+
+// Fiber structure
+struct Fiber {
+  float angle;        // Base angle in radians
+  float length;       // Length from center
+  float phase;        // Animation phase offset
+  int ring;           // Which ring this fiber belongs to
+};
+
+Fiber fibers[MAX_FIBERS];
+int numFibers = 0;
 
 // Pupil parameters
-float pupilSize = 12;
-float pupilTargetSize = 12;
-float irisRadius = 28;
+float pupilRadius = 18;
+float pupilTargetRadius = 18;
+float pupilPhase = 0;
 
-// Blink parameters
-float blinkAmount = 0;    // 0 = open, 1 = closed
-float blinkTarget = 0;
-bool isBlinking = false;
-unsigned long lastBlinkTime = 0;
-unsigned long nextBlinkDelay = 2000;
-
-// Look around timing
-unsigned long lastLookTime = 0;
-unsigned long nextLookDelay = 1500;
+// Animation timing
+unsigned long lastFrameTime = 0;
+float animTime = 0;
 
 // Glitch parameters
 unsigned long lastGlitchTime = 0;
-#define GLITCH_INTERVAL 10000  // 10 seconds
+#define GLITCH_INTERVAL 10000
 bool isGlitching = false;
 unsigned long glitchStartTime = 0;
-#define GLITCH_DURATION 800    // Glitch lasts 800ms
+#define GLITCH_DURATION 800
 
 // Text display state
 enum DisplayState {
@@ -79,32 +81,31 @@ enum DisplayState {
 };
 DisplayState currentState = STATE_EYE;
 unsigned long stateStartTime = 0;
-#define TEXT_DISPLAY_TIME 3000  // 3 seconds
-#define FADE_DURATION 500       // 500ms fade
+#define TEXT_DISPLAY_TIME 3000
+#define FADE_DURATION 500
 
-// Kinetic text animation
+// Kinetic text
 int textAnimFrame = 0;
 unsigned long lastTextAnimTime = 0;
 
-// ASCII glitch characters
+// Glitch characters
 const char glitchChars[] = "01!@#$%^&*<>[]{}|/\\~`";
 const int numGlitchChars = sizeof(glitchChars) - 1;
 
 // Forward declarations
 void onLeftClick();
 void onRightClick();
+void initFibers();
 void drawEye();
 void drawGlitch();
 void drawDigital();
 void drawHumanity();
-void updateEyeMovement();
-void updateBlink();
 void drawFadeOut();
+void drawKineticText(const char* text, bool whiteBg);
 
 void setup() {
   Serial.begin(115200);
 
-  // Initialize random seed
   randomSeed(analogRead(4) * millis());
 
   // Initialize display
@@ -113,25 +114,55 @@ void setup() {
   tft.fillScreen(COL_BLACK);
 
   // Create sprite for double buffering
-  eyeSprite.createSprite(SCREEN_W, SCREEN_H);
-  eyeSprite.setColorDepth(16);
+  spr.createSprite(SCREEN_W, SCREEN_H);
+  spr.setColorDepth(16);
 
   // Setup buttons
   btnLeft.attachClick(onLeftClick);
   btnRight.attachClick(onRightClick);
 
+  // Initialize fibers
+  initFibers();
+
   // Initialize timing
-  lastBlinkTime = millis();
-  lastLookTime = millis();
+  lastFrameTime = millis();
   lastGlitchTime = millis();
-  nextBlinkDelay = random(2000, 5000);
-  nextLookDelay = random(1000, 3000);
 
   Serial.println("Generative Eye initialized");
 }
 
+void initFibers() {
+  numFibers = 0;
+
+  // Create concentric rings of fibers
+  for (int ring = 0; ring < NUM_RINGS; ring++) {
+    // More fibers in outer rings
+    int fibersInRing = BASE_FIBERS + ring * 8;
+    float ringRadius = 22 + ring * 4;  // Starting radius + spacing
+
+    for (int i = 0; i < fibersInRing && numFibers < MAX_FIBERS; i++) {
+      float baseAngle = (2.0 * PI * i) / fibersInRing;
+      // Add slight randomness to angle
+      baseAngle += ((random(100) - 50) / 50.0) * (PI / fibersInRing) * 0.3;
+
+      fibers[numFibers].angle = baseAngle;
+      fibers[numFibers].length = ringRadius + random(6) - 3;
+      fibers[numFibers].phase = random(1000) / 1000.0 * 2 * PI;
+      fibers[numFibers].ring = ring;
+      numFibers++;
+    }
+  }
+
+  Serial.printf("Created %d fibers\n", numFibers);
+}
+
 void loop() {
   unsigned long currentTime = millis();
+  float deltaTime = (currentTime - lastFrameTime) / 1000.0;
+  lastFrameTime = currentTime;
+
+  // Update animation time
+  animTime += deltaTime;
 
   // Always tick buttons
   btnLeft.tick();
@@ -152,16 +183,18 @@ void loop() {
           lastGlitchTime = currentTime;
         } else {
           drawGlitch();
-          delay(20);
+          delay(25);
           break;
         }
       }
 
-      // Normal eye animation
-      updateEyeMovement();
-      updateBlink();
+      // Update pupil pulsing
+      pupilPhase += deltaTime * 0.8;
+      pupilTargetRadius = 16 + sin(pupilPhase) * 4;
+      pupilRadius += (pupilTargetRadius - pupilRadius) * 0.1;
+
       drawEye();
-      delay(16);  // ~60fps
+      delay(20);  // ~50fps
       break;
 
     case STATE_DIGITAL:
@@ -186,7 +219,7 @@ void loop() {
       drawFadeOut();
       if (currentTime - stateStartTime >= FADE_DURATION) {
         currentState = STATE_EYE;
-        lastGlitchTime = currentTime;  // Reset glitch timer
+        lastGlitchTime = currentTime;
       }
       delay(20);
       break;
@@ -199,7 +232,6 @@ void onLeftClick() {
     stateStartTime = millis();
     textAnimFrame = 0;
     lastTextAnimTime = millis();
-    Serial.println("DIGITAL pressed");
   }
 }
 
@@ -209,206 +241,147 @@ void onRightClick() {
     stateStartTime = millis();
     textAnimFrame = 0;
     lastTextAnimTime = millis();
-    Serial.println("HUMANITY pressed");
   }
 }
 
-void updateEyeMovement() {
-  unsigned long currentTime = millis();
+// Draw a fiber with gradient and tip dot
+void drawFiber(float angle, float innerR, float outerR, float wobble) {
+  // Apply subtle wobble animation
+  float adjustedAngle = angle + sin(animTime * 2 + wobble) * 0.03;
 
-  // Time for a new look direction?
-  if (currentTime - lastLookTime >= nextLookDelay) {
-    // Pick new target position
-    targetX = (random(100) - 50) / 50.0 * 0.6;  // -0.6 to 0.6
-    targetY = (random(100) - 50) / 50.0 * 0.5;  // -0.5 to 0.5
+  float cosA = cos(adjustedAngle);
+  float sinA = sin(adjustedAngle);
 
-    // Occasionally look at center
-    if (random(100) < 20) {
-      targetX = 0;
-      targetY = 0;
-    }
+  // Inner point (near pupil)
+  int x1 = CENTER_X + (int)(cosA * innerR);
+  int y1 = CENTER_Y + (int)(sinA * innerR);
 
-    lastLookTime = currentTime;
-    nextLookDelay = random(800, 2500);
+  // Outer point (tip)
+  int x2 = CENTER_X + (int)(cosA * outerR);
+  int y2 = CENTER_Y + (int)(sinA * outerR);
 
-    // Adjust pupil size randomly
-    pupilTargetSize = random(10, 16);
+  // Draw fiber line with gradient effect
+  // We'll draw multiple segments for gradient
+  int segments = 4;
+  for (int s = 0; s < segments; s++) {
+    float t1 = (float)s / segments;
+    float t2 = (float)(s + 1) / segments;
+
+    int sx1 = x1 + (x2 - x1) * t1;
+    int sy1 = y1 + (y2 - y1) * t1;
+    int sx2 = x1 + (x2 - x1) * t2;
+    int sy2 = y1 + (y2 - y1) * t2;
+
+    // Color gradient: darker near center, lighter at tips
+    uint16_t col;
+    if (t1 < 0.25) col = COL_CYAN_DARK;
+    else if (t1 < 0.5) col = COL_CYAN_MID;
+    else if (t1 < 0.75) col = COL_CYAN_LIGHT;
+    else col = COL_CYAN_PALE;
+
+    spr.drawLine(sx1, sy1, sx2, sy2, col);
   }
 
-  // Smooth movement towards target
-  eyeX += (targetX - eyeX) * eyeSpeed;
-  eyeY += (targetY - eyeY) * eyeSpeed;
-
-  // Smooth pupil size change
-  pupilSize += (pupilTargetSize - pupilSize) * 0.1;
-}
-
-void updateBlink() {
-  unsigned long currentTime = millis();
-
-  // Time for a blink?
-  if (!isBlinking && currentTime - lastBlinkTime >= nextBlinkDelay) {
-    isBlinking = true;
-    blinkTarget = 1.0;
-    lastBlinkTime = currentTime;
-
-    // Sometimes do a double blink
-    if (random(100) < 15) {
-      nextBlinkDelay = 150;  // Quick second blink
-    } else {
-      nextBlinkDelay = random(2500, 6000);
-    }
-  }
-
-  // Animate blink
-  if (isBlinking) {
-    blinkAmount += (blinkTarget - blinkAmount) * 0.3;
-
-    if (blinkTarget == 1.0 && blinkAmount > 0.9) {
-      blinkTarget = 0;  // Start opening
-    }
-
-    if (blinkTarget == 0 && blinkAmount < 0.05) {
-      blinkAmount = 0;
-      isBlinking = false;
-    }
-  }
+  // Draw orange dot at tip
+  // Outer dark ring
+  spr.fillCircle(x2, y2, 3, COL_ORANGE_DARK);
+  // Orange middle
+  spr.fillCircle(x2, y2, 2, COL_ORANGE);
+  // Highlight
+  spr.drawPixel(x2 - 1, y2 - 1, COL_CYAN_PALE);
 }
 
 void drawEye() {
-  // Clear sprite
-  eyeSprite.fillSprite(COL_BLACK);
+  // Clear to black
+  spr.fillSprite(COL_BLACK);
 
-  // Calculate eye offset based on look direction
-  int offsetX = (int)(eyeX * 12);
-  int offsetY = (int)(eyeY * 10);
+  // Draw all fibers
+  for (int i = 0; i < numFibers; i++) {
+    float innerR = pupilRadius + 2 + fibers[i].ring * 0.5;
+    float outerR = fibers[i].length;
 
-  // Draw outer eye socket (skin tone circle)
-  eyeSprite.fillCircle(CENTER_X, CENTER_Y, 62, COL_SKIN);
+    // Skip if fiber would be inside pupil
+    if (innerR >= outerR - 4) continue;
 
-  // Draw eye white (sclera) with slight shadow
-  eyeSprite.fillCircle(CENTER_X, CENTER_Y, 52, COL_LIGHT_GRAY);
-  eyeSprite.fillCircle(CENTER_X, CENTER_Y + 2, 50, COL_WHITE);
-
-  // Draw subtle blood vessels
-  for (int i = 0; i < 5; i++) {
-    int angle = random(360);
-    float rad = angle * PI / 180.0;
-    int x1 = CENTER_X + cos(rad) * 40;
-    int y1 = CENTER_Y + sin(rad) * 40;
-    int x2 = CENTER_X + cos(rad) * 50;
-    int y2 = CENTER_Y + sin(rad) * 50;
-    eyeSprite.drawLine(x1, y1, x2, y2, 0xFBCE);  // Very light pink
+    drawFiber(fibers[i].angle, innerR, outerR, fibers[i].phase);
   }
 
-  // Draw iris
-  int irisX = CENTER_X + offsetX;
-  int irisY = CENTER_Y + offsetY;
+  // Draw pupil (jagged edge)
+  // First draw a slightly larger circle for the jagged edge effect
+  int jaggedPoints = 32;
+  int prevX = 0, prevY = 0;
+  int firstX = 0, firstY = 0;
 
-  // Iris outer ring
-  eyeSprite.fillCircle(irisX, irisY, irisRadius, COL_IRIS_DARK);
+  for (int i = 0; i <= jaggedPoints; i++) {
+    float angle = (2.0 * PI * i) / jaggedPoints;
+    // Add noise to radius for jagged effect
+    float noise = sin(angle * 8 + animTime * 3) * 2 + sin(angle * 13 + animTime * 2) * 1.5;
+    float r = pupilRadius + noise;
 
-  // Iris pattern - radial lines
-  for (int a = 0; a < 360; a += 15) {
-    float rad = a * PI / 180.0;
-    int x1 = irisX + cos(rad) * 8;
-    int y1 = irisY + sin(rad) * 8;
-    int x2 = irisX + cos(rad) * (irisRadius - 2);
-    int y2 = irisY + sin(rad) * (irisRadius - 2);
-    uint16_t lineColor = (a % 30 == 0) ? COL_IRIS_LIGHT : COL_IRIS_MID;
-    eyeSprite.drawLine(x1, y1, x2, y2, lineColor);
-  }
+    int x = CENTER_X + (int)(cos(angle) * r);
+    int y = CENTER_Y + (int)(sin(angle) * r);
 
-  // Inner iris highlight
-  eyeSprite.fillCircle(irisX, irisY, irisRadius - 6, COL_IRIS_MID);
-
-  // Draw pupil
-  int pupilR = (int)pupilSize;
-  eyeSprite.fillCircle(irisX, irisY, pupilR, COL_BLACK);
-
-  // Pupil highlight (reflection)
-  eyeSprite.fillCircle(irisX - 5, irisY - 5, 4, COL_WHITE);
-  eyeSprite.fillCircle(irisX + 7, irisY + 3, 2, COL_LIGHT_GRAY);
-
-  // Draw eyelids based on blink
-  if (blinkAmount > 0.01) {
-    int lidHeight = (int)(blinkAmount * 55);
-
-    // Upper eyelid
-    eyeSprite.fillRect(0, 0, SCREEN_W, CENTER_Y - 52 + lidHeight, COL_SKIN);
-    eyeSprite.fillCircle(CENTER_X, CENTER_Y - 52 + lidHeight, 52, COL_SKIN);
-
-    // Lower eyelid
-    eyeSprite.fillRect(0, CENTER_Y + 52 - lidHeight, SCREEN_W, SCREEN_H, COL_SKIN);
-    eyeSprite.fillCircle(CENTER_X, CENTER_Y + 52 - lidHeight, 52, COL_SKIN);
-
-    // Eyelid crease
-    if (blinkAmount < 0.3) {
-      eyeSprite.drawLine(CENTER_X - 45, CENTER_Y - 45, CENTER_X + 45, CENTER_Y - 45, COL_MID_GRAY);
+    if (i == 0) {
+      firstX = x;
+      firstY = y;
+    } else {
+      // Draw triangles to fill the jagged pupil
+      spr.fillTriangle(CENTER_X, CENTER_Y, prevX, prevY, x, y, COL_BLACK);
     }
-  } else {
-    // Draw eyelid edges when open
-    // Upper lid shadow
-    for (int i = 0; i < 3; i++) {
-      int y = CENTER_Y - 50 + i;
-      int halfWidth = sqrt(52*52 - (y - CENTER_Y)*(y - CENTER_Y));
-      eyeSprite.drawFastHLine(CENTER_X - halfWidth, y, halfWidth * 2, COL_SKIN);
-    }
+
+    prevX = x;
+    prevY = y;
   }
 
-  // Circular mask - make edges black (display is circular)
+  // Draw solid inner pupil
+  spr.fillCircle(CENTER_X, CENTER_Y, (int)pupilRadius - 3, COL_BLACK);
+
+  // Circular mask for display edge
   for (int y = 0; y < SCREEN_H; y++) {
     for (int x = 0; x < SCREEN_W; x++) {
       float dx = x - CENTER_X;
       float dy = y - CENTER_Y;
-      float dist = sqrt(dx*dx + dy*dy);
-      if (dist > 62) {
-        eyeSprite.drawPixel(x, y, COL_BLACK);
+      if (dx*dx + dy*dy > 62*62) {
+        spr.drawPixel(x, y, COL_BLACK);
       }
     }
   }
 
-  // Push to display
-  eyeSprite.pushSprite(0, 0);
+  spr.pushSprite(0, 0);
 }
 
 void drawGlitch() {
   unsigned long elapsed = millis() - glitchStartTime;
   float progress = (float)elapsed / GLITCH_DURATION;
+  float intensity = sin(progress * PI) * 0.8;
 
-  // Intensity varies during glitch
-  float intensity = sin(progress * PI) * 0.8;  // Peak in middle
+  spr.fillSprite(COL_BLACK);
 
-  // Random glitch type
   int glitchType = random(4);
-
-  eyeSprite.fillSprite(COL_BLACK);
 
   switch (glitchType) {
     case 0: {
-      // ASCII character scatter
-      eyeSprite.setTextColor(COL_WHITE);
-      eyeSprite.setTextSize(1);
+      // Scattered ASCII
+      spr.setTextColor(COL_WHITE);
       int numChars = (int)(intensity * 40) + 5;
       for (int i = 0; i < numChars; i++) {
         int x = random(SCREEN_W);
         int y = random(SCREEN_H);
         char c = glitchChars[random(numGlitchChars)];
-        eyeSprite.drawChar(x, y, c, COL_WHITE, COL_BLACK, 1);
+        spr.drawChar(x, y, c, COL_WHITE, COL_BLACK, 1);
       }
       break;
     }
 
     case 1: {
-      // Horizontal scan lines with ASCII
+      // Horizontal lines with ASCII
       for (int y = 0; y < SCREEN_H; y += 8) {
         if (random(100) < intensity * 100) {
-          eyeSprite.drawFastHLine(0, y, SCREEN_W, COL_WHITE);
-          // Add some ASCII on the line
+          spr.drawFastHLine(0, y, SCREEN_W, COL_WHITE);
           for (int x = 0; x < SCREEN_W; x += 12) {
             if (random(100) < 50) {
               char c = glitchChars[random(numGlitchChars)];
-              eyeSprite.drawChar(x, y - 4, c, COL_BLACK, COL_WHITE, 1);
+              spr.drawChar(x, y - 4, c, COL_BLACK, COL_WHITE, 1);
             }
           }
         }
@@ -418,45 +391,41 @@ void drawGlitch() {
 
     case 2: {
       // Binary rain
-      eyeSprite.setTextColor(COL_WHITE);
       for (int x = 0; x < SCREEN_W; x += 10) {
         int startY = random(SCREEN_H);
         int len = random(3, 8);
         for (int i = 0; i < len; i++) {
           int y = (startY + i * 10) % SCREEN_H;
           char c = random(2) ? '0' : '1';
-          uint16_t col = (i == len - 1) ? COL_WHITE : COL_MID_GRAY;
-          eyeSprite.drawChar(x, y, c, col, COL_BLACK, 1);
+          uint16_t col = (i == len - 1) ? COL_WHITE : COL_CYAN_MID;
+          spr.drawChar(x, y, c, col, COL_BLACK, 1);
         }
       }
       break;
     }
 
     case 3: {
-      // Block distortion with symbols
+      // Block distortion
       int numBlocks = (int)(intensity * 8) + 2;
       for (int i = 0; i < numBlocks; i++) {
         int bx = random(SCREEN_W - 30);
         int by = random(SCREEN_H - 15);
         int bw = random(15, 40);
         int bh = random(8, 20);
-        uint16_t col = random(2) ? COL_WHITE : COL_MID_GRAY;
-        eyeSprite.fillRect(bx, by, bw, bh, col);
-        // Add symbol in block
+        uint16_t col = random(2) ? COL_WHITE : COL_CYAN_MID;
+        spr.fillRect(bx, by, bw, bh, col);
         char c = glitchChars[random(numGlitchChars)];
         uint16_t textCol = (col == COL_WHITE) ? COL_BLACK : COL_WHITE;
-        eyeSprite.drawChar(bx + bw/2 - 3, by + bh/2 - 4, c, textCol, col, 1);
+        spr.drawChar(bx + bw/2 - 3, by + bh/2 - 4, c, textCol, col, 1);
       }
       break;
     }
   }
 
-  // Always add some noise dots
+  // Noise dots
   int numDots = (int)(intensity * 100);
   for (int i = 0; i < numDots; i++) {
-    int x = random(SCREEN_W);
-    int y = random(SCREEN_H);
-    eyeSprite.drawPixel(x, y, random(2) ? COL_WHITE : COL_MID_GRAY);
+    spr.drawPixel(random(SCREEN_W), random(SCREEN_H), random(2) ? COL_WHITE : COL_CYAN_MID);
   }
 
   // Circular mask
@@ -464,70 +433,59 @@ void drawGlitch() {
     for (int x = 0; x < SCREEN_W; x++) {
       float dx = x - CENTER_X;
       float dy = y - CENTER_Y;
-      if (sqrt(dx*dx + dy*dy) > 62) {
-        eyeSprite.drawPixel(x, y, COL_BLACK);
+      if (dx*dx + dy*dy > 62*62) {
+        spr.drawPixel(x, y, COL_BLACK);
       }
     }
   }
 
-  eyeSprite.pushSprite(0, 0);
+  spr.pushSprite(0, 0);
 }
 
 void drawKineticText(const char* text, bool whiteBg) {
   unsigned long currentTime = millis();
 
-  // Update animation frame
   if (currentTime - lastTextAnimTime > 50) {
     textAnimFrame++;
     lastTextAnimTime = currentTime;
   }
 
-  // Background
   uint16_t bgColor = whiteBg ? COL_WHITE : COL_BLACK;
   uint16_t textColor = whiteBg ? COL_BLACK : COL_WHITE;
 
-  eyeSprite.fillSprite(bgColor);
+  spr.fillSprite(bgColor);
 
   int len = strlen(text);
-
-  // Calculate text positioning
-  // Using font 2 (16 pixel height), each char ~12 pixels wide
   int charWidth = 10;
   int charHeight = 16;
   int totalWidth = len * charWidth;
   int startX = (SCREEN_W - totalWidth) / 2;
   int startY = (SCREEN_H - charHeight) / 2;
 
-  // Draw each character with kinetic effect
   for (int i = 0; i < len; i++) {
-    // Calculate character offset based on animation
     float phase = (textAnimFrame * 0.15 + i * 0.5);
     int offsetY = (int)(sin(phase) * 3);
     int offsetX = (int)(cos(phase * 0.7) * 2);
 
-    // Occasionally glitch a character
     char c = text[i];
     if (random(100) < 5) {
-      // Replace with glitch char briefly
       c = glitchChars[random(numGlitchChars)];
     }
 
     int x = startX + i * charWidth + offsetX;
     int y = startY + offsetY;
 
-    // Draw character shadow for depth
     if (!whiteBg) {
-      eyeSprite.drawChar(x + 1, y + 1, c, COL_DARK_GRAY, bgColor, 2);
+      spr.drawChar(x + 1, y + 1, c, COL_CYAN_DARK, bgColor, 2);
     }
 
-    // Draw main character
-    eyeSprite.drawChar(x, y, c, textColor, bgColor, 2);
+    spr.drawChar(x, y, c, textColor, bgColor, 2);
   }
 
-  // Add subtle scan lines for texture
+  // Scan lines
   for (int y = 0; y < SCREEN_H; y += 4) {
-    uint16_t lineColor = whiteBg ? 0xE71C : 0x1082;  // Subtle variation
-    eyeSprite.drawFastHLine(0, y, SCREEN_W, lineColor);
+    uint16_t lineColor = whiteBg ? 0xE71C : 0x1082;
+    spr.drawFastHLine(0, y, SCREEN_W, lineColor);
   }
 
   // Circular mask
@@ -535,40 +493,37 @@ void drawKineticText(const char* text, bool whiteBg) {
     for (int x = 0; x < SCREEN_W; x++) {
       float dx = x - CENTER_X;
       float dy = y - CENTER_Y;
-      if (sqrt(dx*dx + dy*dy) > 62) {
-        eyeSprite.drawPixel(x, y, COL_BLACK);
+      if (dx*dx + dy*dy > 62*62) {
+        spr.drawPixel(x, y, COL_BLACK);
       }
     }
   }
 
-  eyeSprite.pushSprite(0, 0);
+  spr.pushSprite(0, 0);
 }
 
 void drawDigital() {
-  drawKineticText("DIGITAL", true);  // White background
+  drawKineticText("DIGITAL", true);
 }
 
 void drawHumanity() {
-  drawKineticText("HUMANITY", false);  // Black background
+  drawKineticText("HUMANITY", false);
 }
 
 void drawFadeOut() {
   unsigned long elapsed = millis() - stateStartTime;
   float progress = (float)elapsed / FADE_DURATION;
-
   if (progress > 1.0) progress = 1.0;
 
-  // Calculate fade amount (0-31 for 5-bit per channel adjustment)
-  int fadeLevel = (int)(progress * 20);
+  spr.fillSprite(COL_BLACK);
 
-  eyeSprite.fillSprite(COL_BLACK);
-
-  // Draw fading rectangles
-  for (int i = fadeLevel; i < 20; i++) {
-    int size = 64 - i * 3;
+  // Fade effect with shrinking circles
+  for (int i = 0; i < 20; i++) {
+    int size = (int)((1.0 - progress) * (64 - i * 3));
     if (size > 0) {
-      uint16_t gray = ((20 - i) * 8) << 11 | ((20 - i) * 16) << 5 | ((20 - i) * 8);
-      eyeSprite.fillRect(CENTER_X - size, CENTER_Y - size, size * 2, size * 2, gray);
+      uint8_t gray = (uint8_t)((20 - i) * 12 * (1.0 - progress));
+      uint16_t col = (gray >> 3) << 11 | (gray >> 2) << 5 | (gray >> 3);
+      spr.fillCircle(CENTER_X, CENTER_Y, size, col);
     }
   }
 
@@ -577,11 +532,11 @@ void drawFadeOut() {
     for (int x = 0; x < SCREEN_W; x++) {
       float dx = x - CENTER_X;
       float dy = y - CENTER_Y;
-      if (sqrt(dx*dx + dy*dy) > 62) {
-        eyeSprite.drawPixel(x, y, COL_BLACK);
+      if (dx*dx + dy*dy > 62*62) {
+        spr.drawPixel(x, y, COL_BLACK);
       }
     }
   }
 
-  eyeSprite.pushSprite(0, 0);
+  spr.pushSprite(0, 0);
 }
