@@ -12,8 +12,14 @@
 #define SCREEN_WIDTH         128
 #define SCREEN_WIDTH         128
 
+#ifndef WIFI_SSID
 #define WIFI_SSID            "Your-ssid"
-#define WIFI_PASSWORLD       "Your-password"
+#endif
+
+#ifndef WIFI_PASSWORD
+#define WIFI_PASSWORD       "Your-password"
+#endif
+
 
 #define NTP_SERVER1          "pool.ntp.org"
 #define NTP_SERVER2          "time.nist.gov"
@@ -121,7 +127,7 @@ void wifi_test(void)
     text += WIFI_SSID;
     text += "\n";
     Serial.print(WIFI_SSID);
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORLD);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     uint32_t last_tick = millis();
     uint32_t i = 0, j = 0;
     while (WiFi.status() != WL_CONNECTED) {
@@ -211,8 +217,12 @@ void setup()
     analogReadResolution(12);
 
     tft.begin();
-    tft.setRotation(0);
 
+    // new panel
+    tft.setRotation(2);
+
+    // old panel
+    // tft.setRotation(0);
 
     tft.pushImage(0, 0, 128, 128, (uint16_t *)gImage_img_t_qt_cert);
     delay(2000);
