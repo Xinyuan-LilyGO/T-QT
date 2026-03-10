@@ -73,5 +73,11 @@ T-QT is a development board whose main control chip is ESP32-S3. It is equipped 
 
 - QT currently sells two types of displays. The default configuration in lib/TFT_eSPI is the latest version. If you encounter display issues, please switch to the previous version's configuration:
 - Here are the replacement steps: 
-- Copy extras/old_panel/GC9A01_Init to lib/TFT_eSPI/TFT_Drivers. When prompted to overwrite, select yes. This will revert the display configuration to the old version initialization.
-- To replace with the new version's configuration, follow the same method: Copy extras/new_panel/GC9A01_Init to lib/TFT_eSPI/TFT_Drivers. When prompted to overwrite, select yes. This will revert the display configuration to the new version initialization.
+
+- Old panel
+  1. Copy extras/old_panel/GC9A01_Init.h to lib/TFT_eSPI/TFT_Drivers. When prompted to overwrite, select yes. This will revert the display configuration to the old version initialization.
+  2. Copy extras/old_panel/GC9A01_Rotation.h to lib/TFT_eSPI/TFT_Drivers. When prompted to overwrite, select yes. This will revert the display configuration to the old version initialization.
+
+- New panel
+  1. Copy extras/new_panel/GC9A01_Init to lib/TFT_eSPI/TFT_Drivers. When prompted to overwrite, select yes. This will revert the display configuration to the new version initialization.
+  1. Copy extras/new_panel/GC9A01_Rotation to lib/TFT_eSPI/TFT_Drivers. When prompted to overwrite, select yes. This will revert the display configuration to the new version initialization.

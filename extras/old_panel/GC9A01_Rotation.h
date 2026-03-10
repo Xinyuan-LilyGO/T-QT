@@ -37,7 +37,7 @@
       if (_init_width == 128)
       {
         colstart = 2;
-        rowstart = 3;
+        rowstart = 1;
       }
 #endif
       break;
