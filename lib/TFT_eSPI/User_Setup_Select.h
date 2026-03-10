@@ -24,7 +24,7 @@
 
 // Only ONE line below should be uncommented to define your setup.  Add extra lines and files as needed.
 
-#include <User_Setup.h>           // Default setup is root library folder
+// #include <User_Setup.h>           // Default setup is root library folder
 
 //#include <User_Setups/Setup1_ILI9341.h>  // Setup file for ESP8266 configured for my ILI9341
 //#include <User_Setups/Setup2_ST7735.h>   // Setup file for ESP8266 configured for my ST7735
@@ -134,7 +134,7 @@
 //#include <User_Setups/Setup207_LilyGo_T_HMI.h>            // For the LilyGo T-HMI S3 based ESP32S3 with ST7789 240 x 320 TFT
 //#include <User_Setups/Setup209_LilyGo_T_Dongle_S3.h>      // For the LilyGo T-Dongle S3 based ESP32 with ST7735 80 x 160 TFT
 //#include <User_Setups/Setup210_LilyGo_T_Embed_S3.h>         // For the LilyGo T-Embed S3 based ESP32S3 with ST7789 170 x 320 TFT
-//#include <User_Setups/Setup211_LilyGo_T_QT_Pro_S3.h>         // For the LilyGo T-QT Pro S3 based ESP32S3 with GC9A01 128 x 128 TFT
+#include <User_Setups/Setup211_LilyGo_T_QT_Pro_S3.h>         // For the LilyGo T-QT Pro S3 based ESP32S3 with GC9A01 128 x 128 TFT
 // #include <User_Setups/Setup212_LilyGo_T_PicoPro.h>         // For the LilyGo T-PICO-Pro with ST7796 222 x 480 TFT
 // #include <User_Setups/Setup213_LilyGo_T_Beam_Shield.h>         // For the LilyGo T-BEAM V1.x with ST7796 222 x 480 TFT
 

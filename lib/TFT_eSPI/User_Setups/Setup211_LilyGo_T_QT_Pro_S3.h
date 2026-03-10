@@ -1,6 +1,6 @@
 // GC9A01 128 x 128 display with no chip select line
 #define USER_SETUP_ID 211
-
+#define USE_HSPI_PORT
 #define GC9A01_DRIVER     // Configure all registers
 
 #define TFT_WIDTH  128
@@ -12,8 +12,8 @@
 // #define TFT_INVERSION_ON
 //#define TFT_INVERSION_OFF
 #define TFT_BACKLIGHT_ON 0
-#define CGRAM_OFFSET
-
+// #define CGRAM_OFFSET
+#define DISABLE_ALL_LIBRARY_WARNINGS
 
 #define TFT_BL     10   // LED back-light
 #define TFT_MISO   -1   // Not connected

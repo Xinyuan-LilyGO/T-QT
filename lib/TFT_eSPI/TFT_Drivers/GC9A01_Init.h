@@ -2,6 +2,224 @@
 // This is the command sequence that initialises the GC9A01 driver
 
 {
+#if 1 // LilyGo Version 3 20260310 new panel
+  writecommand(0x11);     //Sleep out
+  delay(120);                //Delay 120ms
+  writecommand(0xB1);     //Normal mode
+  writedata(0x05);   
+  writedata(0x3C);   
+  writedata(0x3C); 
+  
+  writecommand(0xB2);     //Idle mode
+  writedata(0x05);   
+  writedata(0x3C);   
+  writedata(0x3C);   
+
+  writecommand(0xB3);     //Partial mode
+  writedata(0x05);   
+  writedata(0x3C);   
+  writedata(0x3C);   
+  writedata(0x05);   
+  writedata(0x3C);   
+  writedata(0x3C);   
+
+  writecommand(0xB4);     //Dot inversion
+  writedata(0x03);   
+
+  writecommand(0xC0);     //AVDD GVDD
+  writedata(0xAB);   
+  writedata(0x0B);   
+  writedata(0x04);   
+
+  writecommand(0xC1);     //VGH VGL
+  writedata(0xC5);   //C0
+
+  writecommand(0xC2);     //Normal Mode
+  writedata(0x0D);   
+  writedata(0x00);   
+
+  writecommand(0xC3);     //Idle
+  writedata(0x8D);   
+  writedata(0x6A);   
+  writecommand(0xC4);     //Partial+Full
+  writedata(0x8D);   
+  writedata(0xEE);   
+
+  writecommand(0xC5);     //VCOM
+  writedata(0x0F); 
+
+  writecommand(0xE0);     //positive gamma
+  writedata(0x07);   
+  writedata(0x0E);   
+  writedata(0x08);   
+  writedata(0x07);   
+  writedata(0x10);   
+  writedata(0x07);   
+  writedata(0x02);   
+  writedata(0x07);   
+  writedata(0x09);   
+  writedata(0x0F);   
+  writedata(0x25);   
+  writedata(0x36);   
+  writedata(0x00);   
+  writedata(0x08);   
+  writedata(0x04);   
+  writedata(0x10);   
+
+  writecommand(0xE1);     //negative gamma
+  writedata(0x0A);   
+  writedata(0x0D);   
+  writedata(0x08);   
+  writedata(0x07);   
+  writedata(0x0F);   
+  writedata(0x07);   
+  writedata(0x02);   
+  writedata(0x07);   
+  writedata(0x09);   
+  writedata(0x0F);   
+  writedata(0x25);   
+  writedata(0x35);   
+  writedata(0x00);   
+  writedata(0x09);   
+  writedata(0x04);   
+  writedata(0x10);
+     
+  writecommand(0xFC);    
+  writedata(0x80);  
+    
+  writecommand(0x3A);     
+  writedata(0x05);   
+  writecommand(0x36);
+  writedata(0xA8);   
+  writecommand(0x21);     //Display inversion
+  writecommand(0x29);     //Display on
+
+  writecommand(0x2A);     //Set Column Address
+  writedata(0x00);   
+  writedata(0x1A);  //26  
+  writedata(0x00);   
+  writedata(0x69);   //105 
+
+  writecommand(0x2B);     //Set Page Address
+  writedata(0x00);   
+  writedata(0x01);    //1
+  writedata(0x00);   
+  writedata(0xA0);    //160
+  
+  writecommand(0x2C); 
+
+#endif
+
+#if 0 // LilyGo version 2
+  writecommand(0xFE);			
+	writecommand(0xEF);
+
+	writecommand(0xB0);		
+	writedata(0xC0); 
+
+	writecommand(0xB1);
+	writedata(0x80);
+
+	writecommand(0xB2);		
+	writedata(0x27); 
+
+	writecommand(0xB3);			
+	writedata(0x13);
+
+	writecommand(0xB6);		
+	writedata(0x19); 
+
+	writecommand(0xB7);		
+	writedata(0x05);  
+
+	writecommand(0xAC);
+	writedata(0xC8);
+
+	writecommand(0xAB);
+	writedata(0x0f);
+
+	writecommand(0x3A);		
+	writedata(0x05);
+
+	writecommand(0xB4);	
+	writedata(0x04);
+
+	writecommand(0xA8);
+	writedata(0x08);
+
+	writecommand(0xB8);
+	writedata(0x08);
+
+	writecommand(0xEA);
+	writedata(0x02);
+
+	writecommand(0xE8);	
+	writedata(0x2A); 
+
+	writecommand(0xE9);	
+	writedata(0x47); 
+
+	writecommand(0xE7);
+	writedata(0x5F);
+
+	writecommand(0xC6);   
+	writedata(0x21); 
+
+	writecommand(0xC7);   
+	writedata(0x15);
+
+	writecommand(0xF0);	
+	writedata(0x1D);
+	writedata(0x38);
+	writedata(0x09);
+	writedata(0x4D);
+	writedata(0x92);
+	writedata(0x2F);
+	writedata(0x35);
+	writedata(0x52);
+	writedata(0x1E);
+	writedata(0x0C);
+	writedata(0x04);
+	writedata(0x12);
+	writedata(0x14);
+	writedata(0x1F);
+
+	writecommand(0xF1);
+	writedata(0x16);
+	writedata(0x40);
+	writedata(0x1C);
+	writedata(0x54);
+	writedata(0xA9);
+	writedata(0x2D);
+	writedata(0x2E);
+	writedata(0x56);
+	writedata(0x10);
+	writedata(0x0D);
+	writedata(0x0C);
+	writedata(0x1A);
+	writedata(0x14);
+	writedata(0x1E);
+
+	writecommand(0xF4);
+	writedata(0x00);
+	writedata(0x00);
+	writedata(0xFF);
+
+	writecommand(0xBA);
+	writedata(0xFF);
+	writedata(0xFF);
+
+  writecommand(0x20);
+
+	writecommand(0x11);
+	delay(120);
+	writecommand(0x29);
+#endif
+
+
+
+
+#if 0 // LilyGo version 1
   writecommand(0xEF);
   writecommand(0xEB);
   writedata(0x14);
@@ -229,4 +447,5 @@
   delay(120);
   writecommand(0x29);
   delay(20);
+#endif
 }
